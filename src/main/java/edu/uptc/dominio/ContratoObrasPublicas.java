@@ -10,9 +10,9 @@ public class ContratoObrasPublicas extends Contrato{
     private String ubicacionObra;
     private double areaIntervencion;
 
-    public ContratoObrasPublicas(LocalDate fechaCreacion, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+    public ContratoObrasPublicas(LocalDate fechaCreacion,String id, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
                                  Contrato contratista, Contrato contratante, String ubicacionObra, double areaIntervencion) {
-        super(fechaCreacion, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+        super(fechaCreacion, id,valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.ubicacionObra = ubicacionObra;
         this.areaIntervencion = areaIntervencion;
     }
@@ -27,5 +27,13 @@ public class ContratoObrasPublicas extends Contrato{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ContratoObrasPublicas{" +
+                "ubicacionObra='" + ubicacionObra + '\'' +
+                ", areaIntervencion=" + areaIntervencion +
+                '}';
     }
 }

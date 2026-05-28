@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import edu.uptc.enums.EstadoContrato;
 import edu.uptc.enums.TipoContrato;
 
+
 public class Contrato {
     protected LocalDate fechaCreacion;
     protected String id;
@@ -27,15 +28,35 @@ public class Contrato {
         this.contratante = contratante;
     }
 
-    double calcularValor(){
+    public double calcularValor(){
         return 0.0;
     }
 
-    boolean validarContrato() {
+    public boolean validarContrato() {
         return false;
     }
     public double getValorContrato() {
         return valorContrato;
+    }
+
+    public EstadoContrato getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoContrato estado) {
+        this.estado = estado;
+    }
+
+    public void setValorContrato(double valorContrato) {
+        this.valorContrato = valorContrato;
+    }
+
+    public int getPlazoContrato() {
+        return plazoContrato;
+    }
+
+    public void setPlazoContrato(int plazoContrato) {
+        this.plazoContrato = plazoContrato;
     }
 
     public String getId() {

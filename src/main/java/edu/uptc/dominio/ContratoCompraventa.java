@@ -14,10 +14,10 @@ public class ContratoCompraventa extends Contrato {
     private int cantidad;
 
     public ContratoCompraventa() {}
-    public ContratoCompraventa(LocalDate fechaCreacion, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+    public ContratoCompraventa(LocalDate fechaCreacion,String id, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
                                Contrato contratista, Contrato contratante, String item, String marca, String modelo, String serie,
                                double valorUnitario, int cantidad) {
-        super(fechaCreacion, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+        super(fechaCreacion,id, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.item = item;
         this.marca = marca;
         this.modelo = modelo;
@@ -37,5 +37,17 @@ public class ContratoCompraventa extends Contrato {
         }
         return false ;
 
+    }
+
+    @Override
+    public String toString() {
+        return "ContratoCompraventa{" +
+                "item='" + item + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", serie='" + serie + '\'' +
+                ", valorUnitario=" + valorUnitario +
+                ", cantidad=" + cantidad +
+                '}';
     }
 }

@@ -13,9 +13,9 @@ public class ContratoPrestacionServicios extends Contrato{
     private double honorarioMensual ;
     private int mesesDuracion;
 
-    public ContratoPrestacionServicios(LocalDate fechaCreacion, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+    public ContratoPrestacionServicios(LocalDate fechaCreacion, String id,double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
                                        Contrato contratista, Contrato contratante, String perfilRequerido, double honorarioMensual,int mesesDuracion) {
-        super(fechaCreacion, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+        super(fechaCreacion,id, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.perfilRequerido = perfilRequerido;
         this.entregables = new ArrayList<>();
         this.honorarioMensual = honorarioMensual;
@@ -34,5 +34,15 @@ public class ContratoPrestacionServicios extends Contrato{
            return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ContratoPrestacionServicios{" +
+                "perfilRequerido='" + perfilRequerido + '\'' +
+                ", entregables=" + entregables +
+                ", honorarioMensual=" + honorarioMensual +
+                ", mesesDuracion=" + mesesDuracion +
+                '}';
     }
 }
