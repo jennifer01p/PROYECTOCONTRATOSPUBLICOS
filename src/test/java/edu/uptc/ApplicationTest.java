@@ -31,13 +31,13 @@ class ApplicationTest {
     private Contratista contratista;
 
     /**
-     * Inicializa los servicios y datos comunes antes de cada prueba.
+     * Inicializa servicios y datos comunes antes de cada prueba.
      */
     @BeforeEach
     void setUp() {
-        usuarioServicio = new UsuarioServicio();
+        usuarioServicio  = new UsuarioServicio();
         contratoServicio = new ContratoServicio();
-        reporteServicio = new ReporteServicio();
+        reporteServicio  = new ReporteServicio();
 
         contratante = new Contratante(TipoPersona.JURIDICA, TipoDocumento.NIT,
                 "900123456", "Alcaldía de Tunja", "contratante@tunja.gov.co",
@@ -53,16 +53,16 @@ class ApplicationTest {
         seguridadServicio = new SeguridadServicio(usuarioServicio.getUsuarios());
     }
 
-    // ===================== PRUEBAS DE USUARIO =====================
+    // ===================== USUARIOS =====================
 
     /**
-     * Verifica que un usuario se registra y puede buscarse correctamente.
+     * Verifica que un usuario registrado puede encontrarse por documento.
      */
     @Test
-    @DisplayName("Crear y buscar usuario")
+    @DisplayName("Crear y buscar usuario por documento")
     void testCrearYBuscarUsuario() {
         Usuario encontrado = usuarioServicio.buscarUsuario("1234567890");
-        assertNotNull(encontrado, "El usuario debe existir");
+        assertNotNull(encontrado);
         assertEquals("Carlos Pérez", encontrado.getNombre());
     }
 
@@ -76,10 +76,10 @@ class ApplicationTest {
     }
 
     /**
-     * Verifica que un usuario puede actualizarse correctamente.
+     * Verifica que los datos de un usuario se actualizan correctamente.
      */
     @Test
-    @DisplayName("Actualizar usuario")
+    @DisplayName("Actualizar usuario existente")
     void testActualizarUsuario() {
         String resultado = usuarioServicio.actualizarUsuario("1234567890",
                 TipoPersona.NATURAL, "nuevo@gmail.com", "nuevaClave", "Av Nueva", "Bogotá");
@@ -98,13 +98,23 @@ class ApplicationTest {
         assertNull(usuarioServicio.buscarUsuario("1234567890"));
     }
 
-    // ===================== PRUEBAS DE SEGURIDAD =====================
+    /**
+     * Verifica que eliminar un usuario inexistente retorna el mensaje adecuado.
+     */
+    @Test
+    @DisplayName("Eliminar usuario inexistente")
+    void testEliminarUsuarioInexistente() {
+        String resultado = usuarioServicio.eliminarUsuario("0000000000");
+        assertEquals("Usuario no encontrado", resultado);
+    }
+
+    // ===================== SEGURIDAD =====================
 
     /**
      * Verifica que el login con credenciales correctas retorna el usuario.
      */
     @Test
-    @DisplayName("Login exitoso")
+    @DisplayName("Login exitoso con credenciales correctas")
     void testLoginExitoso() {
         Usuario u = seguridadServicio.iniciarSesion("carlos@gmail.com", "clave456");
         assertNotNull(u);
@@ -116,59 +126,88 @@ class ApplicationTest {
      */
     @Test
     @DisplayName("Login fallido con contraseña incorrecta")
-    void testLoginFallido() {
+    void testLoginContrasenaIncorrecta() {
         assertNull(seguridadServicio.iniciarSesion("carlos@gmail.com", "incorrecta"));
     }
 
-    // ===================== PRUEBAS DE CONTRATOS =====================
-
     /**
-     * Verifica que un ContratoPrestacionServicios válido pasa la validación.
+     * Verifica que el login con correo inexistente retorna null.
      */
     @Test
-    @DisplayName("Validar ContratoPrestacionServicios correcto")
+    @DisplayName("Login fallido con correo inexistente")
+    void testLoginCorreoInexistente() {
+        assertNull(seguridadServicio.iniciarSesion("noexiste@mail.com", "clave456"));
+    }
+
+    // ===================== CONTRATOS - PRESTACIÓN DE SERVICIOS =====================
+
+    /**
+     * Verifica que un ContratoPrestacionServicios con valores consistentes es válido.
+     * honorario(2_000_000) * meses(6) = 12_000_000 == valorContrato
+     */
+    @Test
+    @DisplayName("Validar ContratoPrestacionServicios válido")
     void testValidacionPrestacionServiciosValido() {
-        // honorario 2_000_000 * 6 meses = 12_000_000 == valorContrato
         ContratoPrestacionServicios c = new ContratoPrestacionServicios(
                 LocalDate.now(), "C001", "Consultoría TI", 12_000_000,
                 6, EstadoContrato.PUBLICADO, TipoContrato.PRESENTACION_SERVICIOS,
                 contratista, contratante, "Ingeniero de Sistemas", 2_000_000, 6);
-        assertTrue(c.validarContrato(), "El contrato de prestación de servicios debe ser válido");
+        assertTrue(c.validarContrato());
     }
 
     /**
-     * Verifica que un ContratoPrestacionServicios con valores inconsistentes falla la validación.
+     * Verifica que un ContratoPrestacionServicios con valores inconsistentes es inválido.
+     * honorario(2_000_000) * meses(6) = 12_000_000 != valorContrato(15_000_000)
      */
     @Test
-    @DisplayName("Validar ContratoPrestacionServicios incorrecto")
+    @DisplayName("Validar ContratoPrestacionServicios inválido")
     void testValidacionPrestacionServiciosInvalido() {
         ContratoPrestacionServicios c = new ContratoPrestacionServicios(
                 LocalDate.now(), "C002", "Consultoría TI", 15_000_000,
                 6, EstadoContrato.PUBLICADO, TipoContrato.PRESENTACION_SERVICIOS,
                 contratista, contratante, "Ingeniero", 2_000_000, 6);
-        assertFalse(c.validarContrato(), "El contrato con valores inconsistentes no debe ser válido");
+        assertFalse(c.validarContrato());
     }
 
+    // ===================== CONTRATOS - COMPRAVENTA =====================
+
     /**
-     * Verifica que un ContratoCompraventa válido pasa la validación.
+     * Verifica que un ContratoCompraventa con valores consistentes es válido.
+     * valorUnitario(500_000) * cantidad(10) = 5_000_000 == valorContrato
      */
     @Test
-    @DisplayName("Validar ContratoCompraventa correcto")
+    @DisplayName("Validar ContratoCompraventa válido")
     void testValidacionCompraventaValido() {
-        // 500_000 * 10 = 5_000_000
         ContratoCompraventa c = new ContratoCompraventa(
                 LocalDate.now(), "C003", "Compra de sillas", 5_000_000,
                 1, EstadoContrato.PUBLICADO, TipoContrato.COMPRAVENTA,
-                contratista, contratante, "Silla ergonómica", "Rimax", "OfficeMax",
-                "SER-001", 500_000, 10);
+                contratista, contratante, "Silla ergonómica", "Rimax",
+                "OfficeMax", "SER-001", 500_000, 10);
         assertTrue(c.validarContrato());
     }
 
     /**
-     * Verifica que un ContratoObrasPublicas con datos completos pasa la validación.
+     * Verifica que un ContratoCompraventa con valores inconsistentes es inválido.
+     * valorUnitario(500_000) * cantidad(10) = 5_000_000 != valorContrato(8_000_000)
      */
     @Test
-    @DisplayName("Validar ContratoObrasPublicas correcto")
+    @DisplayName("Validar ContratoCompraventa inválido")
+    void testValidacionCompraventaInvalido() {
+        ContratoCompraventa c = new ContratoCompraventa(
+                LocalDate.now(), "C003b", "Compra de sillas", 8_000_000,
+                1, EstadoContrato.PUBLICADO, TipoContrato.COMPRAVENTA,
+                contratista, contratante, "Silla", "Rimax",
+                "OfficeMax", "SER-001", 500_000, 10);
+        assertFalse(c.validarContrato());
+    }
+
+    // ===================== CONTRATOS - OBRA PÚBLICA =====================
+
+    /**
+     * Verifica que un ContratoObrasPublicas con datos completos es válido.
+     */
+    @Test
+    @DisplayName("Validar ContratoObrasPublicas válido")
     void testValidacionObrasPublicasValido() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
                 LocalDate.now(), "C004", "Construcción parque", 80_000_000,
@@ -178,69 +217,120 @@ class ApplicationTest {
     }
 
     /**
-     * Verifica que crear y consultar un contrato por ID funciona correctamente.
+     * Verifica que un ContratoObrasPublicas sin ubicación es inválido.
      */
     @Test
-    @DisplayName("Crear y consultar contrato")
-    void testCrearYConsultarContrato() {
+    @DisplayName("Validar ContratoObrasPublicas sin ubicación inválido")
+    void testValidacionObrasPublicasSinUbicacion() {
+        ContratoObrasPublicas c = new ContratoObrasPublicas(
+                LocalDate.now(), "C004b", "Construcción parque", 80_000_000,
+                12, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "", 500.0);
+        assertFalse(c.validarContrato());
+    }
+
+    // ===================== CRUD CONTRATOS =====================
+
+    /**
+     * Verifica que crearContratoValidado guarda el contrato si es válido.
+     */
+    @Test
+    @DisplayName("crearContratoValidado con contrato válido lo guarda")
+    void testCrearContratoValidadoValido() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
                 LocalDate.now(), "C005", "Obra vial", 50_000_000,
                 8, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
                 contratista, contratante, "Av. Norte Tunja", 200.0);
-        contratoServicio.crearContrato(c);
+        String resultado = contratoServicio.crearContratoValidado(c);
+        assertTrue(resultado.contains("exitosamente"));
         assertNotNull(contratoServicio.consultarContrato("C005"));
     }
 
     /**
-     * Verifica que cambiar el estado de un contrato funciona correctamente.
+     * Verifica que crearContratoValidado rechaza un contrato inválido.
      */
     @Test
-    @DisplayName("Cambiar estado de contrato")
-    void testCambiarEstadoContrato() {
-        ContratoObrasPublicas c = new ContratoObrasPublicas(
-                LocalDate.now(), "C006", "Obra peatonal", 30_000_000,
-                4, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
-                contratista, contratante, "Carrera 9 Tunja", 100.0);
-        contratoServicio.crearContrato(c);
-        String resultado = contratoServicio.cambiarEstadoContrato("C006", EstadoContrato.LICITACION);
-        assertTrue(resultado.contains("LICITACION"));
-        assertEquals(EstadoContrato.LICITACION, c.getEstado());
+    @DisplayName("crearContratoValidado con contrato inválido lo rechaza")
+    void testCrearContratoValidadoInvalido() {
+        ContratoPrestacionServicios c = new ContratoPrestacionServicios(
+                LocalDate.now(), "C006", "Consultoría", 99_000_000,
+                6, EstadoContrato.PUBLICADO, TipoContrato.PRESENTACION_SERVICIOS,
+                contratista, contratante, "Ingeniero", 2_000_000, 6);
+        String resultado = contratoServicio.crearContratoValidado(c);
+        assertTrue(resultado.contains("no es válido"));
+        assertNull(contratoServicio.consultarContrato("C006"));
     }
 
     /**
-     * Verifica que eliminar un contrato lo remueve del sistema.
+     * Verifica que actualizar un contrato existente cambia sus datos.
+     */
+    @Test
+    @DisplayName("Actualizar contrato existente")
+    void testActualizarContrato() {
+        ContratoObrasPublicas c = new ContratoObrasPublicas(
+                LocalDate.now(), "C007", "Obra peatonal", 30_000_000,
+                4, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "Carrera 9 Tunja", 100.0);
+        contratoServicio.crearContrato(c);
+        String resultado = contratoServicio.actualizarContrato("C007", 35_000_000, 5);
+        assertTrue(resultado.contains("actualizada"));
+        assertEquals(35_000_000, contratoServicio.consultarContrato("C007").getValorContrato());
+    }
+
+    /**
+     * Verifica que eliminar un contrato existente lo remueve del sistema.
      */
     @Test
     @DisplayName("Eliminar contrato existente")
     void testEliminarContrato() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
-                LocalDate.now(), "C007", "Acueducto", 20_000_000,
+                LocalDate.now(), "C008", "Acueducto", 20_000_000,
                 3, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
                 contratista, contratante, "Rural Tunja", 50.0);
         contratoServicio.crearContrato(c);
-        String res = contratoServicio.eliminar("C007");
-        assertTrue(res.contains("eliminado"));
-        assertNull(contratoServicio.consultarContrato("C007"));
+        String resultado = contratoServicio.eliminar("C008");
+        assertTrue(resultado.contains("eliminado"));
+        assertNull(contratoServicio.consultarContrato("C008"));
     }
 
-    // ===================== PRUEBAS DE REPORTE =====================
+    // ===================== ESTADOS Y REPORTES =====================
 
     /**
-     * Verifica que se genera un reporte de interventoría al cambiar el estado.
+     * Verifica que cambiarEstadoConReporte actualiza el estado y genera el reporte.
      */
     @Test
-    @DisplayName("Crear reporte de interventoría")
-    void testCrearReporte() {
+    @DisplayName("Cambiar estado genera reporte de interventoría")
+    void testCambiarEstadoGeneraReporte() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
-                LocalDate.now(), "C008", "Electrificación", 10_000_000,
+                LocalDate.now(), "C009", "Electrificación", 10_000_000,
                 2, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
                 contratista, contratante, "Sector rural", 80.0);
         contratoServicio.crearContrato(c);
-        contratoServicio.cambiarEstadoContrato("C008", EstadoContrato.EJECUCION);
-        reporteServicio.crearReporte(c, "Inicio de ejecución de la obra");
+        contratoServicio.cambiarEstadoConReporte("C009", EstadoContrato.EJECUCION,
+                "Inicio de ejecución de la obra", reporteServicio);
 
-        ArrayList<ReporteInventoria> reportes = reporteServicio.consultarReportesPorContrato("C008");
+        assertEquals(EstadoContrato.EJECUCION, c.getEstado());
+        ArrayList<ReporteInventoria> reportes = reporteServicio.consultarReportesPorContrato("C009");
         assertEquals(1, reportes.size());
         assertEquals("Inicio de ejecución de la obra", reportes.get(0).getInforme());
+    }
+
+    /**
+     * Verifica que cambiar el estado varias veces genera un reporte por cada cambio.
+     */
+    @Test
+    @DisplayName("Múltiples cambios de estado generan múltiples reportes")
+    void testMultiplesCambiosEstado() {
+        ContratoObrasPublicas c = new ContratoObrasPublicas(
+                LocalDate.now(), "C010", "Parque", 15_000_000,
+                3, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "Calle 5", 60.0);
+        contratoServicio.crearContrato(c);
+        contratoServicio.cambiarEstadoConReporte("C010", EstadoContrato.LICITACION, "Apertura licitación", reporteServicio);
+        contratoServicio.cambiarEstadoConReporte("C010", EstadoContrato.ADJUDICACION, "Adjudicado a contratista", reporteServicio);
+        contratoServicio.cambiarEstadoConReporte("C010", EstadoContrato.EJECUCION, "Inicio de obra", reporteServicio);
+
+        assertEquals(EstadoContrato.EJECUCION, c.getEstado());
+        assertEquals(3, reporteServicio.consultarReportesPorContrato("C010").size());
     }
 }

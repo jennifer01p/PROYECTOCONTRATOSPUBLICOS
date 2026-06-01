@@ -1,22 +1,23 @@
 package edu.uptc.controlador;
 
-import edu.uptc.dominio.*;
-import edu.uptc.enums.*;
+import edu.uptc.dominio.Contratante;
+import edu.uptc.dominio.Contratista;
+import edu.uptc.dominio.Usuario;
+import edu.uptc.enums.NivelEntidad;
+import edu.uptc.enums.TipoDocumento;
+import edu.uptc.enums.TipoPersona;
 import edu.uptc.servicio.UsuarioServicio;
 
-import javax.swing.*;
-
 /**
- * Controlador encargado de gestionar las operaciones CRUD de usuarios
- * (contratantes y contratistas) a través de cuadros de diálogo JOptionPane.
- * Solo el administrador puede usar estas funciones.
+ * Controlador de usuarios. Actúa como puente entre la vista y el servicio.
+ * No contiene lógica de negocio ni interfaces gráficas.
  *
  * @author Jennifer, Jesus y Santiago
  * @version 1.0
  */
 public class UsuarioControlador {
 
-    /** Servicio de usuarios utilizado por este controlador. */
+    /** Servicio de usuarios. */
     private UsuarioServicio usuarioServicio;
 
     /**
@@ -29,145 +30,97 @@ public class UsuarioControlador {
     }
 
     /**
-     * Solicita los datos comunes de un usuario mediante JOptionPane.
-     * Retorna null si el usuario cancela algún campo obligatorio.
+     * Crea y registra un nuevo contratante.
      *
-     * @return Arreglo con los datos comunes, o null si se canceló.
+     * @param tipoPersona    Tipo de persona.
+     * @param tipoDocumento  Tipo de documento.
+     * @param numeroDocumento Número de documento.
+     * @param nombre         Nombre completo.
+     * @param correo         Correo electrónico.
+     * @param contrasena     Contraseña.
+     * @param telefono       Teléfono.
+     * @param direccion      Dirección.
+     * @param ciudad         Ciudad.
+     * @param sector         Sector de la entidad.
+     * @param nivelEntidad   Nivel de la entidad.
+     * @param codigoEntidad  Código único de entidad.
      */
-    private String[] pedirDatosComunes() {
-        String[] opcTipoPersona = {"NATURAL", "JURIDICA"};
-        int tpIdx = JOptionPane.showOptionDialog(null, "Tipo de persona:", "Registro",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcTipoPersona, opcTipoPersona[0]);
-        if (tpIdx < 0) return null;
-
-        String[] opcTipoDoc = {"CC", "TI", "CE", "PASAPORTE", "NIT"};
-        int tdIdx = JOptionPane.showOptionDialog(null, "Tipo de documento:", "Registro",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcTipoDoc, opcTipoDoc[0]);
-        if (tdIdx < 0) return null;
-
-        String numDoc = JOptionPane.showInputDialog("Número de documento:");
-        if (numDoc == null || numDoc.isBlank()) return null;
-        String nombre = JOptionPane.showInputDialog("Nombre completo:");
-        if (nombre == null || nombre.isBlank()) return null;
-        String correo = JOptionPane.showInputDialog("Correo electrónico:");
-        if (correo == null || correo.isBlank()) return null;
-        String clave = JOptionPane.showInputDialog("Contraseña:");
-        if (clave == null || clave.isBlank()) return null;
-        String tel = JOptionPane.showInputDialog("Teléfono:");
-        if (tel == null || tel.isBlank()) return null;
-        String dir = JOptionPane.showInputDialog("Dirección:");
-        if (dir == null || dir.isBlank()) return null;
-        String ciudad = JOptionPane.showInputDialog("Ciudad:");
-        if (ciudad == null || ciudad.isBlank()) return null;
-
-        return new String[]{opcTipoPersona[tpIdx], opcTipoDoc[tdIdx], numDoc, nombre, correo, clave, tel, dir, ciudad};
+    public void crearContratante(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
+                                  String numeroDocumento, String nombre, String correo,
+                                  String contrasena, String telefono, String direccion,
+                                  String ciudad, String sector, NivelEntidad nivelEntidad,
+                                  String codigoEntidad) {
+        Contratante contratante = new Contratante(tipoPersona, tipoDocumento, numeroDocumento,
+                nombre, correo, contrasena, telefono, direccion, ciudad,
+                sector, nivelEntidad, codigoEntidad);
+        usuarioServicio.crearUsuario(contratante);
     }
 
     /**
-     * Muestra el menú de creación de usuarios (contratante o contratista)
-     * y registra el nuevo usuario en el sistema.
+     * Crea y registra un nuevo contratista.
+     *
+     * @param tipoPersona     Tipo de persona.
+     * @param tipoDocumento   Tipo de documento.
+     * @param numeroDocumento Número de documento.
+     * @param nombre          Nombre completo.
+     * @param correo          Correo electrónico.
+     * @param contrasena      Contraseña.
+     * @param telefono        Teléfono.
+     * @param direccion       Dirección.
+     * @param ciudad          Ciudad.
+     * @param esEntidadPublica Si es entidad pública.
+     * @param areaDesempeno   Función principal del área de desempeño.
      */
-    public void crearUsuario() {
-        String[] tipos = {"Contratante", "Contratista"};
-        int tipoIdx = JOptionPane.showOptionDialog(null, "¿Qué tipo de usuario desea crear?", "Crear Usuario",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]);
-        if (tipoIdx < 0) return;
-
-        String[] datos = pedirDatosComunes();
-        if (datos == null) {
-            JOptionPane.showMessageDialog(null, "Creación cancelada.");
-            return;
-        }
-
-        TipoPersona tp = TipoPersona.valueOf(datos[0]);
-        TipoDocumento td = TipoDocumento.valueOf(datos[1]);
-
-        if (tipoIdx == 0) {
-            // Contratante
-            String sector = JOptionPane.showInputDialog("Sector de la entidad:");
-            if (sector == null || sector.isBlank()) { JOptionPane.showMessageDialog(null, "Cancelado."); return; }
-            String[] niveles = {"MUNICIPAL", "DEPARTAMENTAL", "NACIONAL"};
-            int nivelIdx = JOptionPane.showOptionDialog(null, "Nivel de la entidad:", "Crear Contratante",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, niveles, niveles[0]);
-            if (nivelIdx < 0) return;
-            String codEntidad = JOptionPane.showInputDialog("Código único de entidad:");
-            if (codEntidad == null || codEntidad.isBlank()) { JOptionPane.showMessageDialog(null, "Cancelado."); return; }
-
-            Contratante c = new Contratante(tp, td, datos[2], datos[3], datos[4], datos[5],
-                    datos[6], datos[7], datos[8], sector, NivelEntidad.valueOf(niveles[nivelIdx]), codEntidad);
-            usuarioServicio.crearUsuario(c);
-            JOptionPane.showMessageDialog(null, "Contratante registrado exitosamente.");
-        } else {
-            // Contratista
-            int entPub = JOptionPane.showConfirmDialog(null, "¿Es entidad pública?", "Crear Contratista", JOptionPane.YES_NO_OPTION);
-            if (entPub < 0) return;
-            String area = JOptionPane.showInputDialog("Función principal del área de desempeño:");
-            if (area == null || area.isBlank()) { JOptionPane.showMessageDialog(null, "Cancelado."); return; }
-
-            Contratista c = new Contratista(tp, td, datos[2], datos[3], datos[4], datos[5],
-                    datos[6], datos[7], datos[8], entPub == JOptionPane.YES_OPTION, area);
-            usuarioServicio.crearUsuario(c);
-            JOptionPane.showMessageDialog(null, "Contratista registrado exitosamente.");
-        }
+    public void crearContratista(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
+                                  String numeroDocumento, String nombre, String correo,
+                                  String contrasena, String telefono, String direccion,
+                                  String ciudad, boolean esEntidadPublica, String areaDesempeno) {
+        Contratista contratista = new Contratista(tipoPersona, tipoDocumento, numeroDocumento,
+                nombre, correo, contrasena, telefono, direccion, ciudad,
+                esEntidadPublica, areaDesempeno);
+        usuarioServicio.crearUsuario(contratista);
     }
 
     /**
-     * Consulta un usuario por número de documento y muestra su información.
+     * Busca un usuario por número de documento.
+     *
+     * @param numeroDocumento Número de documento.
+     * @return El usuario encontrado o null.
      */
-    public void consultarUsuario() {
-        String doc = JOptionPane.showInputDialog("Ingrese el número de documento a consultar:");
-        if (doc == null || doc.isBlank()) return;
-        Usuario u = usuarioServicio.buscarUsuario(doc);
-        if (u != null) {
-            JOptionPane.showMessageDialog(null, u.toString(), "Información del Usuario", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    public Usuario consultarUsuario(String numeroDocumento) {
+        return usuarioServicio.buscarUsuario(numeroDocumento);
     }
 
     /**
-     * Actualiza los datos básicos de un usuario existente.
+     * Actualiza los datos básicos de un usuario.
+     *
+     * @param numeroDocumento Documento del usuario a actualizar.
+     * @param tipoPersona     Nuevo tipo de persona.
+     * @param correo          Nuevo correo.
+     * @param contrasena      Nueva contraseña.
+     * @param direccion       Nueva dirección.
+     * @param ciudad          Nueva ciudad.
+     * @return Mensaje de resultado.
      */
-    public void actualizarUsuario() {
-        String doc = JOptionPane.showInputDialog("Ingrese el número de documento del usuario a actualizar:");
-        if (doc == null || doc.isBlank()) return;
-        Usuario u = usuarioServicio.buscarUsuario(doc);
-        if (u == null) {
-            JOptionPane.showMessageDialog(null, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        String[] opcTipoPersona = {"NATURAL", "JURIDICA"};
-        int tpIdx = JOptionPane.showOptionDialog(null, "Nuevo tipo de persona:", "Actualizar",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcTipoPersona, u.getTipoPersona().name());
-        if (tpIdx < 0) return;
-        String correo = JOptionPane.showInputDialog("Nuevo correo:", u.getCorreo());
-        if (correo == null) return;
-        String clave = JOptionPane.showInputDialog("Nueva contraseña:", u.getContraseña());
-        if (clave == null) return;
-        String dir = JOptionPane.showInputDialog("Nueva dirección:", u.getDirecccion());
-        if (dir == null) return;
-        String ciudad = JOptionPane.showInputDialog("Nueva ciudad:", u.getCiudad());
-        if (ciudad == null) return;
-
-        String resultado = usuarioServicio.actualizarUsuario(doc, TipoPersona.valueOf(opcTipoPersona[tpIdx]),
-                correo, clave, dir, ciudad);
-        JOptionPane.showMessageDialog(null, resultado);
+    public String actualizarUsuario(String numeroDocumento, TipoPersona tipoPersona,
+                                     String correo, String contrasena,
+                                     String direccion, String ciudad) {
+        return usuarioServicio.actualizarUsuario(numeroDocumento, tipoPersona, correo, contrasena, direccion, ciudad);
     }
 
     /**
-     * Elimina un usuario del sistema por número de documento.
+     * Elimina un usuario por número de documento.
+     *
+     * @param numeroDocumento Documento del usuario a eliminar.
+     * @return Mensaje de resultado.
      */
-    public void eliminarUsuario() {
-        String doc = JOptionPane.showInputDialog("Ingrese el número de documento del usuario a eliminar:");
-        if (doc == null || doc.isBlank()) return;
-        int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de eliminar este usuario?", "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
-        String resultado = usuarioServicio.eliminarUsuario(doc);
-        JOptionPane.showMessageDialog(null, resultado);
+    public String eliminarUsuario(String numeroDocumento) {
+        return usuarioServicio.eliminarUsuario(numeroDocumento);
     }
 
     /**
      * Retorna el servicio de usuarios.
+     *
      * @return Instancia de {@link UsuarioServicio}.
      */
     public UsuarioServicio getUsuarioServicio() {
