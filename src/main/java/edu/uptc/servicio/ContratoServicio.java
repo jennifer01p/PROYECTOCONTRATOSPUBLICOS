@@ -66,8 +66,9 @@ public class ContratoServicio {
         Contrato contrato = consultarContrato(id);
         if(contrato!= null){
             contrato.setEstado(estado);
+            return "Estado del contrato actualizado a "+estado;
         }
-        return "El contrato con la id "+id+ "no se encontro";
+        return "El contrato con la id "+id+ " no se encontro";
     }
 
 

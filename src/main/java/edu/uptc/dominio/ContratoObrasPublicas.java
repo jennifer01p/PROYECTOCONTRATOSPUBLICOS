@@ -10,9 +10,9 @@ public class ContratoObrasPublicas extends Contrato{
     private String ubicacionObra;
     private double areaIntervencion;
 
-    public ContratoObrasPublicas(LocalDate fechaCreacion,String id, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
-                                 Contrato contratista, Contrato contratante, String ubicacionObra, double areaIntervencion) {
-        super(fechaCreacion, id,valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+    public ContratoObrasPublicas(LocalDate fechaCreacion,String id, String objeto, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+                                 Contratista contratista, Contratante contratante, String ubicacionObra, double areaIntervencion) {
+        super(fechaCreacion, id, objeto, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.ubicacionObra = ubicacionObra;
         this.areaIntervencion = areaIntervencion;
     }

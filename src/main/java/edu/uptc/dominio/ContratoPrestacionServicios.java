@@ -13,9 +13,9 @@ public class ContratoPrestacionServicios extends Contrato{
     private double honorarioMensual ;
     private int mesesDuracion;
 
-    public ContratoPrestacionServicios(LocalDate fechaCreacion, String id,double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
-                                       Contrato contratista, Contrato contratante, String perfilRequerido, double honorarioMensual,int mesesDuracion) {
-        super(fechaCreacion,id, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+    public ContratoPrestacionServicios(LocalDate fechaCreacion, String id, String objeto, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+                                       Contratista contratista, Contratante contratante, String perfilRequerido, double honorarioMensual,int mesesDuracion) {
+        super(fechaCreacion,id, objeto, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.perfilRequerido = perfilRequerido;
         this.entregables = new ArrayList<>();
         this.honorarioMensual = honorarioMensual;

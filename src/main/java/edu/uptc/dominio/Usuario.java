@@ -10,17 +10,19 @@ public class Usuario {
     protected String nombre ;
     protected String correo;
     protected String contraseña ;
+    protected String telefono ;
     protected String direcccion ;
     protected String ciudad ;
 
     public Usuario(TipoPersona tipoPersona, TipoDocumento tipoDocumento, String numeroDocumento , String nombre,
-                   String correo,String contraseña ,String direcccion,String ciudad ) {
+                   String correo,String contraseña ,String telefono,String direcccion,String ciudad ) {
         this.tipoPersona = tipoPersona;
         this.tipoDocumento = tipoDocumento;
         this.numeroDocumento = numeroDocumento;
         this.nombre = nombre;
         this.correo = correo;
         this.contraseña = contraseña;
+        this.telefono = telefono;
         this.direcccion = direcccion;
         this.ciudad = ciudad;
     }
@@ -66,6 +68,14 @@ public class Usuario {
         this.contraseña = contraseña;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
     public String getDirecccion() {
         return direcccion;
     }
@@ -91,6 +101,7 @@ public class Usuario {
                 ", nombre='" + nombre + '\'' +
                 ", correo='" + correo + '\'' +
                 ", contraseña='" + contraseña + '\'' +
+                ", telefono='" + telefono + '\'' +
                 ", direcccion='" + direcccion + '\'' +
                 ", ciudad='" + ciudad + '\'' +
                 '}';

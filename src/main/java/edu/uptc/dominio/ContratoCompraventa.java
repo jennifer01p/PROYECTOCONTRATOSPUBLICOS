@@ -14,10 +14,10 @@ public class ContratoCompraventa extends Contrato {
     private int cantidad;
 
     public ContratoCompraventa() {}
-    public ContratoCompraventa(LocalDate fechaCreacion,String id, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
-                               Contrato contratista, Contrato contratante, String item, String marca, String modelo, String serie,
+    public ContratoCompraventa(LocalDate fechaCreacion,String id, String objeto, double valorContrato, int plazoContrato, EstadoContrato estado, TipoContrato tipoContrato,
+                               Contratista contratista, Contratante contratante, String item, String marca, String modelo, String serie,
                                double valorUnitario, int cantidad) {
-        super(fechaCreacion,id, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
+        super(fechaCreacion,id, objeto, valorContrato, plazoContrato, estado, tipoContrato, contratista, contratante);
         this.item = item;
         this.marca = marca;
         this.modelo = modelo;

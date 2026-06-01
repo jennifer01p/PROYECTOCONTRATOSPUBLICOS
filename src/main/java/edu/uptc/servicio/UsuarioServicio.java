@@ -18,8 +18,9 @@ public class UsuarioServicio {
 
     public Usuario buscarUsuario(String documento){
         for(Usuario usuarioAux : usuarios){
-            if(documento.equals(usuarioAux.getNumeroDocumento()));
-            return usuarioAux;
+            if(documento.equals(usuarioAux.getNumeroDocumento())){
+                return usuarioAux;
+            }
         }
         return null;
     }
@@ -28,7 +29,7 @@ public class UsuarioServicio {
                                     String contraseña,String direcccion, String ciudad){
 
         Usuario usuario = buscarUsuario(cedula);
-        if(cedula != null){
+        if(usuario != null){
             usuario.setTipoPersona(tipoPersona);
             usuario.setCorreo(correo);
             usuario.setContraseña(contraseña);

@@ -1,4 +1,4 @@
 package edu.uptc.controlador;
 
-public class RerporteControlador {
+public class ReporteControlador {
 }
