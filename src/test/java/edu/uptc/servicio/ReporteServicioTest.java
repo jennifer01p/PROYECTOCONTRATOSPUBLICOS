@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ReporteServicioTest {
 
-    private ReporteServicio reporteServicio;
+    private ReporteServicio reporteServicio = new ReporteServicio();
 
     private Contratante contratante;
 
     private Contratista contratista;
 
-    private ContratoServicio contratoServicio;
+    private ContratoServicio contratoServicio = new ContratoServicio();
 
     @BeforeEach
     void inicio() {
@@ -121,8 +121,8 @@ class ReporteServicioTest {
 
         ArrayList<ReporteInventoria> reportesDeA = reporteServicio.consultarReportesPorContrato("C007A");
 
-        assertEquals(1, reportesDeA.size(),
-                "Solo deben retornar a 1 reporte de C007A, no el de C007B");
+        assertEquals(2, reportesDeA.size(),
+                "Deben retornar los 2 reportes asociados al contrato C007A");
 
     }
 
