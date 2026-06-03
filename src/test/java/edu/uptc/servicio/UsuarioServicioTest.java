@@ -11,13 +11,28 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Clase de pruebas unitarias para {@link UsuarioServicio}.
+ * Verifica el correcto funcionamiento de la gestión de usuarios, incluyendo
+ * la creación y verificación de existencia de documentos.
+ *
+ * @author Jennifer, Jesus y Santiago
+ * @version 1.0
+ */
 class UsuarioServicioTest {
 
+    /** Instancia del servicio de usuarios a probar. */
     private UsuarioServicio usuarioServicio;
+    /** Contratante de prueba utilizado en los tests. */
     private Contratante contratante;
+    /** Contratista de prueba utilizado en los tests. */
     private Contratista contratista;
 
 
+    /**
+     * Configuración inicial para cada prueba.
+     * Se inicializa la instancia de {@link UsuarioServicio} y los objetos de contratante y contratista de prueba.
+     */
     @BeforeEach
     void setUp() {
         usuarioServicio = new UsuarioServicio();
@@ -37,6 +52,10 @@ class UsuarioServicioTest {
                 false, "Ingeniería Civil");
     }
 
+    /**
+     * Prueba el método {@link UsuarioServicio#existeDocumento(String)}.
+     * Verifica que el método retorne {@code true} cuando un documento ya ha sido registrado.
+     */
     @Test
     void ExisteDocumentoTest() {
 
@@ -46,6 +65,10 @@ class UsuarioServicioTest {
     }
 
 
+    /**
+     * Prueba el método {@link UsuarioServicio#crearUsuario(Usuario)} para un caso exitoso.
+     * Verifica que el mensaje de retorno sea el esperado y que el usuario pueda ser encontrado posteriormente.
+     */
     @Test
     void CrearUsuarioExitosoTest() {
         String resultado = usuarioServicio.crearUsuario(contratista);

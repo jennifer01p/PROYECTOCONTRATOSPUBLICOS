@@ -28,7 +28,9 @@ public class Application {
     private static SeguridadControlador seguridadControlador;
 
     /**
-     * Punto de entrada. Inicializa datos de prueba y lanza el menú principal.
+     * Punto de entrada principal de la aplicación.
+     * Inicializa los servicios y controladores, carga datos de prueba y gestiona el flujo de inicio de sesión
+     * y el acceso a los menús de usuario según el rol.
      *
      * @param args Argumentos de línea de comandos (no utilizados).
      */
@@ -87,7 +89,8 @@ public class Application {
     // ===================== MENÚ ADMINISTRADOR =====================
 
     /**
-     * Menú del administrador: gestión completa de usuarios.
+     * Muestra el menú principal para el rol de Administrador, permitiendo la gestión de usuarios.
+     * Incluye opciones para crear, consultar, actualizar y eliminar usuarios.
      */
     private static void menuAdministrador() {
         boolean activo = true;
@@ -105,7 +108,12 @@ public class Application {
         }
     }
 
-    /** Captura datos y llama al controlador para crear un usuario. */
+    /**
+     * Permite al administrador crear un nuevo usuario (Contratante o Contratista).
+     * Solicita al usuario los datos necesarios a través de cuadros de diálogo y
+     * utiliza el {@link UsuarioControlador} para registrar el nuevo usuario.
+     * Realiza validaciones básicas como la unicidad del número de documento.
+     */
     private static void vistaCrearUsuario() {
         String[] tipos = {"Contratante", "Contratista"};
         int tipoIdx = JOptionPane.showOptionDialog(null, "¿Qué tipo de usuario desea crear?", "Crear Usuario",
@@ -156,7 +164,7 @@ public class Application {
         TipoPersona tp  = TipoPersona.valueOf(opcTP[tpIdx]);
         TipoDocumento td = TipoDocumento.valueOf(opcTD[tdIdx]);
 
-        if (tipoIdx == 0) {
+        if (tipoIdx == 0) { // Contratante
             String sector  = JOptionPane.showInputDialog("Sector de la entidad:");
             if (sector == null || sector.isBlank()) return;
             String[] opcNivel = {"MUNICIPAL", "DEPARTAMENTAL", "NACIONAL"};
@@ -169,7 +177,7 @@ public class Application {
             String resultado = usuarioControlador.crearContratante(tp, td, numDoc, nombre, correo, clave,
                     tel, dir, ciudad, sector, NivelEntidad.valueOf(opcNivel[nivelIdx]), codEntidad);
             JOptionPane.showMessageDialog(null, resultado);
-        } else {
+        } else { // Contratista
             int entPub = JOptionPane.showConfirmDialog(null, "¿Es entidad pública?", "Crear Contratista", JOptionPane.YES_NO_OPTION);
             if (entPub < 0) return;
             String area = JOptionPane.showInputDialog("Función principal del área de desempeño:");
@@ -181,7 +189,10 @@ public class Application {
         }
     }
 
-    /** Captura el documento y muestra la información del usuario. */
+    /**
+     * Permite al administrador consultar la información de un usuario existente.
+     * Solicita el número de documento del usuario y muestra sus detalles si es encontrado.
+     */
     private static void vistaConsultarUsuario() {
         String doc = JOptionPane.showInputDialog("Número de documento a consultar:");
         if (doc == null || doc.isBlank()) return;
@@ -192,7 +203,11 @@ public class Application {
             JOptionPane.showMessageDialog(null, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    /** Captura datos nuevos y actualiza el usuario. */
+    /**
+     * Permite al administrador actualizar los datos básicos de un usuario existente.
+     * Solicita el número de documento del usuario y luego los nuevos valores para
+     * tipo de persona, correo, contraseña, dirección y ciudad.
+     */
     private static void vistaActualizarUsuario() {
         String doc = JOptionPane.showInputDialog("Número de documento del usuario a actualizar:");
         if (doc == null || doc.isBlank()) return;
@@ -216,7 +231,10 @@ public class Application {
         JOptionPane.showMessageDialog(null, resultado);
     }
 
-    /** Captura el documento y elimina el usuario. */
+    /**
+     * Permite al administrador eliminar un usuario del sistema.
+     * Solicita el número de documento del usuario y pide confirmación antes de proceder con la eliminación.
+     */
     private static void vistaEliminarUsuario() {
         String doc = JOptionPane.showInputDialog("Número de documento del usuario a eliminar:");
         if (doc == null || doc.isBlank()) return;
@@ -228,9 +246,10 @@ public class Application {
     // ===================== MENÚ CONTRATANTE =====================
 
     /**
-     * Menú del contratante: gestión de contratos.
+     * Muestra el menú principal para el rol de Contratante, permitiendo la gestión de contratos.
+     * Incluye opciones para crear, consultar, actualizar, eliminar contratos y ver reportes de interventoría.
      *
-     * @param contratante El contratante autenticado.
+     * @param contratante El objeto {@link Contratante} autenticado que accede a este menú.
      */
     private static void menuContratante(Contratante contratante) {
         boolean activo = true;
@@ -250,7 +269,14 @@ public class Application {
         }
     }
 
-    /** Captura todos los datos del contrato y llama al controlador según el tipo. */
+    /**
+     * Permite al contratante crear un nuevo contrato.
+     * Solicita los datos del contratista, los detalles generales del contrato (ID, objeto, valor, plazo)
+     * y luego los datos específicos según el tipo de contrato (Prestación de Servicios, Compraventa, Obra Pública).
+     * Realiza validaciones de entrada y utiliza el {@link ContratoControlador} para crear el contrato.
+     *
+     * @param contratante El objeto {@link Contratante} que está creando el contrato.
+     */
     private static void vistaCrearContrato(Contratante contratante) {
         // Buscar contratista
         String docContratista = JOptionPane.showInputDialog("Documento del contratista asignado:");
@@ -303,7 +329,7 @@ public class Application {
         if (tipoIdx < 0) return;
 
         String resultado;
-        if (tipoIdx == 0) {
+        if (tipoIdx == 0) { // Prestación de Servicios
             String perfil = JOptionPane.showInputDialog("Perfil requerido:");
             if (perfil == null || perfil.isBlank()) return;
             String honStr = JOptionPane.showInputDialog("Honorario mensual ($):");
@@ -317,7 +343,7 @@ public class Application {
                 JOptionPane.showMessageDialog(null, "Honorario inválido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } else if (tipoIdx == 1) {
+        } else if (tipoIdx == 1) { // Compraventa
             String item   = JOptionPane.showInputDialog("Ítem o bien a adquirir:");
             if (item == null || item.isBlank()) return;
             String marca  = JOptionPane.showInputDialog("Marca:");
@@ -340,7 +366,7 @@ public class Application {
                 JOptionPane.showMessageDialog(null, "Datos numéricos inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } else {
+        } else { // Obra Pública
             String ubicacion = JOptionPane.showInputDialog("Ubicación de la obra:");
             if (ubicacion == null || ubicacion.isBlank()) return;
             String areaStr = JOptionPane.showInputDialog("Área de intervención (m²):");
@@ -358,7 +384,10 @@ public class Application {
         JOptionPane.showMessageDialog(null, resultado);
     }
 
-    /** Captura el ID y muestra la información del contrato. */
+    /**
+     * Permite al contratante consultar la información de un contrato existente.
+     * Solicita el ID del contrato y muestra sus detalles si es encontrado.
+     */
     private static void vistaConsultarContrato() {
         String id = JOptionPane.showInputDialog("ID del contrato a consultar:");
         if (id == null || id.isBlank()) return;
@@ -369,7 +398,10 @@ public class Application {
             JOptionPane.showMessageDialog(null, "Contrato no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    /** Captura los nuevos datos y actualiza el contrato. */
+    /**
+     * Permite al contratante actualizar el valor y el plazo de un contrato existente.
+     * Solicita el ID del contrato y los nuevos valores para el valor total y el plazo.
+     */
     private static void vistaActualizarContrato() {
         String id = JOptionPane.showInputDialog("ID del contrato a actualizar:");
         if (id == null || id.isBlank()) return;
@@ -386,7 +418,10 @@ public class Application {
         }
     }
 
-    /** Captura el ID y elimina el contrato. */
+    /**
+     * Permite al contratante eliminar un contrato del sistema.
+     * Solicita el ID del contrato y pide confirmación antes de proceder con la eliminación.
+     */
     private static void vistaEliminarContrato() {
         String id = JOptionPane.showInputDialog("ID del contrato a eliminar:");
         if (id == null || id.isBlank()) return;
@@ -397,7 +432,10 @@ public class Application {
 
     // ===================== MENÚ CONTRATISTA =====================
 
-    /** Menú del contratista: cambio de estado y consulta de reportes. */
+    /**
+     * Muestra el menú principal para el rol de Contratista, permitiendo cambiar el estado de contratos
+     * y consultar reportes de interventoría.
+     */
     private static void menuContratista() {
         boolean activo = true;
         while (activo) {
@@ -414,7 +452,11 @@ public class Application {
         }
     }
 
-    /** Captura el ID, estado e informe, y llama al controlador para cambiar el estado. */
+    /**
+     * Permite al contratista cambiar el estado de un contrato.
+     * Solicita el ID del contrato, el nuevo estado y un informe que justifique el cambio.
+     * Utiliza el {@link ContratoControlador} para realizar la actualización y generar el reporte.
+     */
     private static void vistaCambiarEstado() {
         String id = JOptionPane.showInputDialog("ID del contrato:");
         if (id == null || id.isBlank()) return;
@@ -439,7 +481,10 @@ public class Application {
                 contratoControlador.cambiarEstadoContrato(id, EstadoContrato.valueOf(estados[estadoIdx]), informe));
     }
 
-    /** Muestra todos los reportes registrados. */
+    /**
+     * Muestra una lista de todos los reportes de interventoría registrados en el sistema.
+     * Los reportes incluyen información del contrato asociado, fecha/hora e informe.
+     */
     private static void vistaVerTodosLosReportes() {
         ArrayList<ReporteInventoria> reportes = reporteControlador.consultarTodos();
         if (reportes.isEmpty()) {
@@ -457,7 +502,10 @@ public class Application {
         JOptionPane.showMessageDialog(null, sb.toString(), "Reportes de Interventoría", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /** Muestra los reportes de un contrato específico. */
+    /**
+     * Permite al contratista ver los reportes de interventoría asociados a un contrato específico.
+     * Solicita el ID del contrato y muestra los reportes encontrados para ese contrato.
+     */
     private static void vistaVerReportesPorContrato() {
         String id = JOptionPane.showInputDialog("ID del contrato:");
         if (id == null || id.isBlank()) return;
@@ -479,7 +527,8 @@ public class Application {
     // ===================== DATOS DE PRUEBA =====================
 
     /**
-     * Carga usuarios de prueba en el sistema para facilitar las pruebas.
+     * Carga un conjunto de usuarios de prueba (Administrador, Contratante, Contratista)
+     * en el sistema al inicio de la aplicación para facilitar las pruebas y demostraciones.
      */
     private static void cargarDatosDePrueba() {
         Administrador admin = new Administrador(TipoPersona.NATURAL, TipoDocumento.CC,

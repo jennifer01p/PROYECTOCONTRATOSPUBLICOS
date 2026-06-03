@@ -5,7 +5,6 @@ import edu.uptc.dominio.Contratista;
 import edu.uptc.dominio.ContratoObrasPublicas;
 import edu.uptc.dominio.ReporteInventoria;
 import edu.uptc.enums.*;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,19 +14,35 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Clase de pruebas unitarias para {@link ReporteServicio}.
+ * Verifica el correcto funcionamiento de la creación y consulta de reportes de interventoría.
+ *
+ * @author Jennifer, Jesus y Santiago
+ * @version 1.0
+ */
 class ReporteServicioTest {
 
-    private ReporteServicio reporteServicio = new ReporteServicio();
+    /** Instancia del servicio de reportes a probar. */
+    private ReporteServicio reporteServicio;
 
+    /** Contratante de prueba utilizado en los tests. */
     private Contratante contratante;
 
+    /** Contratista de prueba utilizado en los tests. */
     private Contratista contratista;
 
-    private ContratoServicio contratoServicio = new ContratoServicio();
+    /** Instancia del servicio de contratos para crear contratos de prueba. */
+    private ContratoServicio contratoServicio;
 
+    /**
+     * Configuración inicial para cada prueba.
+     * Se inicializan las instancias de los servicios y los objetos de contratante y contratista de prueba.
+     */
     @BeforeEach
     void inicio() {
-
+        reporteServicio = new ReporteServicio();
+        contratoServicio = new ContratoServicio();
 
         contratante = new Contratante(
                 TipoPersona.JURIDICA, TipoDocumento.NIT,
@@ -36,7 +51,6 @@ class ReporteServicioTest {
                 "6087412580", "Calle 19", "Tunja",
                 "Gobierno", NivelEntidad.MUNICIPAL, "ENT-001");
 
-        // Contratista de prueba
         contratista = new Contratista(
                 TipoPersona.NATURAL, TipoDocumento.CC,
                 "1234567890", "Carlos Pérez",
@@ -46,8 +60,12 @@ class ReporteServicioTest {
     }
 
 
+    /**
+     * Prueba la creación de un reporte de interventoría.
+     * Verifica que el reporte se agregue correctamente a la lista de reportes.
+     */
     @Test
-    //Crear reporte y agregarlo a la lista y valida que se agrego
+    @DisplayName("Crear reporte y agregarlo a la lista y valida que se agrego")
     void CrearReporteTest() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
                 LocalDate.now(), "C001", "Construcción parque",
@@ -63,7 +81,12 @@ class ReporteServicioTest {
         );
     }
 
+    /**
+     * Prueba la consulta de todos los reportes cuando la lista está vacía.
+     * Verifica que se retorne una lista no nula y vacía.
+     */
     @Test
+    @DisplayName("Consultar todos los reportes cuando la lista está vacía")
     void ConsultarTodosLosReportesTest() {
 
         ArrayList<ReporteInventoria> resultado =
@@ -75,8 +98,12 @@ class ReporteServicioTest {
     }
 
 
+    /**
+     * Prueba la consulta de todos los reportes verificando el número correcto de reportes.
+     * Se crean múltiples reportes y se verifica que la cantidad retornada sea la esperada.
+     */
     @Test
-    //verificar que son el numero de reportes que se crearon
+    @DisplayName("Consultar todos los reportes y verificar el número correcto")
     void ConsultarTodosLosReportesNumeroCorrectoTest() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
                 LocalDate.now(), "C006", "Obra tamaño",
@@ -97,8 +124,13 @@ class ReporteServicioTest {
 
 
 
+    /**
+     * Prueba la consulta de reportes filtrados por un ID de contrato específico.
+     * Se crean reportes para diferentes contratos y se verifica que solo se retornen
+     * los reportes asociados al contrato solicitado.
+     */
     @Test
-    //Para validar si se esta retornando los reportes con el id
+    @DisplayName("Consultar reportes por ID de contrato")
     void ConsultarReportesPorContratoTest() {
         ContratoObrasPublicas cA = new ContratoObrasPublicas(
                 LocalDate.now(), "C007A", "Obra A",

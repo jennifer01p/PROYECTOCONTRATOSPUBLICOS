@@ -9,13 +9,29 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Clase de pruebas unitarias para {@link ContratoServicio}.
+ * Verifica el correcto funcionamiento de la gestión de contratos, incluyendo
+ * la creación, consulta, actualización, eliminación y cambio de estado.
+ *
+ * @author Jennifer, Jesus y Santiago
+ * @version 1.0
+ */
 class ContratoServicioTest {
 
+    /** Instancia del servicio de contratos a probar. */
     private ContratoServicio contratoServicio;
+    /** Instancia del servicio de reportes, utilizada para pruebas de cambio de estado con reporte. */
     private ReporteServicio reporteServicio;
+    /** Contratante de prueba utilizado en los tests. */
     private Contratante contratante;
+    /** Contratista de prueba utilizado en los tests. */
     private Contratista contratista;
 
+    /**
+     * Configuración inicial para cada prueba.
+     * Se inicializan las instancias de los servicios y los objetos de contratante y contratista de prueba.
+     */
     @BeforeEach
     void setUp() {
         contratoServicio = new ContratoServicio();
@@ -36,6 +52,10 @@ class ContratoServicioTest {
                 false, "Ingeniería Civil");
     }
 
+    /**
+     * Prueba el método {@link ContratoServicio#existeIdContrato(String)}.
+     * Verifica que el método retorne {@code true} cuando un ID de contrato ya ha sido registrado.
+     */
     @Test
     void existeIdContratoTest() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(LocalDate.now(), "C001", "Obra A", 10_000_000,
@@ -48,6 +68,10 @@ class ContratoServicioTest {
     }
 
 
+    /**
+     * Prueba el método {@link ContratoServicio#crearContrato(Contrato)}.
+     * Verifica que un contrato se cree exitosamente y que pueda ser consultado posteriormente.
+     */
     @Test
     void crearContratoTest(){
         ContratoObrasPublicas c = new ContratoObrasPublicas(
@@ -60,11 +84,13 @@ class ContratoServicioTest {
 
         assertEquals("Contrato registrado con ID: C002", resultado, "El mensaje debe confirmar que el contrato C002 fue registrado");
 
-        // Verificar que realmente quedó en la lista
-
         assertNotNull(contratoServicio.consultarContrato("C002"), "Después de crearContrato, consultarContrato no debe retornar null");
     }
 
+    /**
+     * Prueba el método {@link ContratoServicio#crearContratoValidado(Contrato)}.
+     * Verifica que un contrato válido (con valores que coinciden) se cree exitosamente.
+     */
     @Test
     void crearContratoValidadoTest() {
         ContratoPrestacionServicios c = new ContratoPrestacionServicios(
@@ -81,6 +107,10 @@ class ContratoServicioTest {
         assertNotNull(contratoServicio.consultarContrato("C004"), "El contrato debe quedar registrado en la lista");
     }
 
+    /**
+     * Prueba el método {@link ContratoServicio#consultarContrato(String)}.
+     * Verifica que se pueda encontrar un contrato existente por su ID.
+     */
     @Test
     void consultarContratoTest() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
@@ -97,6 +127,10 @@ class ContratoServicioTest {
         assertEquals("C007", encontrado.getId(), "El ID del contrato retornado debe ser C007");
     }
 
+    /**
+     * Prueba el método {@link ContratoServicio#actualizarContrato(String, double, int)}.
+     * Verifica que el valor y el plazo de un contrato se actualicen correctamente.
+     */
     @Test
     void actualizarContratoTest() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
@@ -120,6 +154,10 @@ class ContratoServicioTest {
     }
 
 
+    /**
+     * Prueba el método {@link ContratoServicio#eliminar(String)}.
+     * Verifica que un contrato se elimine exitosamente del sistema.
+     */
     @Test
     void testEliminar_Exitoso() {
         ContratoObrasPublicas c = new ContratoObrasPublicas(
@@ -136,6 +174,10 @@ class ContratoServicioTest {
         assertNull(contratoServicio.consultarContrato("C009"), "Después de eliminar, consultarContrato debe retornar null");
     }
 
+    /**
+     * Prueba el método {@link ContratoServicio#cambiarEstadoContrato(String, EstadoContrato)}.
+     * Verifica que el estado de un contrato se actualice correctamente.
+     */
     @Test
     void CambiarEstadoContratoExitosoTest() {
 
