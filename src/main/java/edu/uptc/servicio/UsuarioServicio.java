@@ -25,12 +25,33 @@ public class UsuarioServicio {
     }
 
     /**
-     * Registra un nuevo usuario en el sistema.
+     * Verifica si ya existe un usuario con el número de documento dado.
+     * Garantiza que los documentos sean únicos en el sistema.
+     *
+     * @param numeroDocumento Número de documento a verificar.
+     * @return {@code true} si ya existe un usuario con ese documento, {@code false} si no.
+     */
+    public boolean existeDocumento(String numeroDocumento) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getNumeroDocumento().equals(numeroDocumento)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Registra un nuevo usuario en el sistema si su número de documento no está en uso.
      *
      * @param usuario El usuario a registrar.
+     * @return Mensaje indicando si el usuario fue creado o si el documento ya existe.
      */
-    public void crearUsuario(Usuario usuario) {
+    public String crearUsuario(Usuario usuario) {
+        if (existeDocumento(usuario.getNumeroDocumento())) {
+            return "Ya existe un usuario con el documento " + usuario.getNumeroDocumento();
+        }
         usuarios.add(usuario);
+        return "Usuario registrado exitosamente.";
     }
 
     /**

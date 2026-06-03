@@ -25,22 +25,47 @@ public class ContratoServicio {
     }
 
     /**
-     * Registra un contrato directamente sin validación.
+     * Verifica si ya existe un contrato con el ID dado.
+     * Garantiza que los IDs de contrato sean únicos en el sistema.
      *
-     * @param contrato El contrato a registrar.
+     * @param id ID a verificar.
+     * @return {@code true} si ya existe un contrato con ese ID, {@code false} si no.
      */
-    public void crearContrato(Contrato contrato) {
-        contratos.add(contrato);
+    public boolean existeIdContrato(String id) {
+        for (Contrato contrato : contratos) {
+            if (contrato.getId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Valida y registra un contrato. Si el contrato no cumple las reglas
-     * de negocio propias de su tipo, no se guarda y retorna un mensaje de error.
+     * Registra un contrato directamente sin validación de negocio.
+     * Sí verifica que el ID sea único.
+     *
+     * @param contrato El contrato a registrar.
+     * @return Mensaje de resultado.
+     */
+    public String crearContrato(Contrato contrato) {
+        if (existeIdContrato(contrato.getId())) {
+            return "Ya existe un contrato con el ID " + contrato.getId();
+        }
+        contratos.add(contrato);
+        return "Contrato registrado con ID: " + contrato.getId();
+    }
+
+    /**
+     * Valida y registra un contrato. Verifica que el ID sea único y que
+     * el contrato cumpla las reglas de negocio propias de su tipo.
      *
      * @param contrato El contrato a validar y registrar.
      * @return Mensaje indicando si se creó correctamente o el motivo del fallo.
      */
     public String crearContratoValidado(Contrato contrato) {
+        if (existeIdContrato(contrato.getId())) {
+            return "Ya existe un contrato con el ID " + contrato.getId();
+        }
         if (!contrato.validarContrato()) {
             return "El contrato no es válido. Verifique que los valores calculados "
                     + "coincidan con el valor total del contrato.";

@@ -123,8 +123,23 @@ public class Application {
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opcTD, opcTD[0]);
         if (tdIdx < 0) return;
 
-        String numDoc  = JOptionPane.showInputDialog("Número de documento:");
-        if (numDoc == null || numDoc.isBlank()) return;
+        // Validar documento único antes de continuar
+        String numDoc;
+        while (true) {
+            numDoc = JOptionPane.showInputDialog("Número de documento:");
+            if (numDoc == null) return;
+            if (numDoc.isBlank()) {
+                JOptionPane.showMessageDialog(null, "El número de documento no puede estar vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            if (usuarioControlador.existeDocumento(numDoc)) {
+                JOptionPane.showMessageDialog(null,
+                        "Ya existe un usuario con el documento " + numDoc + ".\nIngrese un número de documento diferente.",
+                        "Documento Duplicado", JOptionPane.ERROR_MESSAGE);
+            } else {
+                break;
+            }
+        }
         String nombre  = JOptionPane.showInputDialog("Nombre completo:");
         if (nombre == null || nombre.isBlank()) return;
         String correo  = JOptionPane.showInputDialog("Correo electrónico:");
@@ -151,18 +166,18 @@ public class Application {
             String codEntidad = JOptionPane.showInputDialog("Código único de entidad:");
             if (codEntidad == null || codEntidad.isBlank()) return;
 
-            usuarioControlador.crearContratante(tp, td, numDoc, nombre, correo, clave,
+            String resultado = usuarioControlador.crearContratante(tp, td, numDoc, nombre, correo, clave,
                     tel, dir, ciudad, sector, NivelEntidad.valueOf(opcNivel[nivelIdx]), codEntidad);
-            JOptionPane.showMessageDialog(null, "Contratante registrado exitosamente.");
+            JOptionPane.showMessageDialog(null, resultado);
         } else {
             int entPub = JOptionPane.showConfirmDialog(null, "¿Es entidad pública?", "Crear Contratista", JOptionPane.YES_NO_OPTION);
             if (entPub < 0) return;
             String area = JOptionPane.showInputDialog("Función principal del área de desempeño:");
             if (area == null || area.isBlank()) return;
 
-            usuarioControlador.crearContratista(tp, td, numDoc, nombre, correo, clave,
+            String resultado = usuarioControlador.crearContratista(tp, td, numDoc, nombre, correo, clave,
                     tel, dir, ciudad, entPub == JOptionPane.YES_OPTION, area);
-            JOptionPane.showMessageDialog(null, "Contratista registrado exitosamente.");
+            JOptionPane.showMessageDialog(null, resultado);
         }
     }
 
@@ -247,9 +262,23 @@ public class Application {
         }
         Contratista contratista = (Contratista) u;
 
-        // Datos base
-        String id = JOptionPane.showInputDialog("ID del contrato:");
-        if (id == null || id.isBlank()) return;
+        // Validar ID único antes de continuar
+        String id;
+        while (true) {
+            id = JOptionPane.showInputDialog("ID del contrato:");
+            if (id == null) return;
+            if (id.isBlank()) {
+                JOptionPane.showMessageDialog(null, "El ID no puede estar vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            if (contratoControlador.existeIdContrato(id)) {
+                JOptionPane.showMessageDialog(null,
+                        "Ya existe un contrato con el ID " + id + ".\nIngrese un ID diferente.",
+                        "ID Duplicado", JOptionPane.ERROR_MESSAGE);
+            } else {
+                break;
+            }
+        }
         String objeto = JOptionPane.showInputDialog("Objeto del contrato:");
         if (objeto == null || objeto.isBlank()) return;
         String valorStr = JOptionPane.showInputDialog("Valor total del contrato ($):");

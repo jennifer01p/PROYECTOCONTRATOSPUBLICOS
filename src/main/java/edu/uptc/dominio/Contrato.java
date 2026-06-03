@@ -5,7 +5,7 @@ import edu.uptc.enums.EstadoContrato;
 import edu.uptc.enums.TipoContrato;
 
 
-public abstract class Contrato {
+public class Contrato {
     protected LocalDate fechaCreacion;
     protected String id;
     protected String objeto;
@@ -30,11 +30,13 @@ public abstract class Contrato {
         this.contratante = contratante;
     }
 
-    public abstract double calcularValor();
+    public double calcularValor(){
+        return 0.0;
+    }
 
-
-    public abstract boolean validarContrato();
-
+    public boolean validarContrato() {
+        return false;
+    }
     public double getValorContrato() {
         return valorContrato;
     }

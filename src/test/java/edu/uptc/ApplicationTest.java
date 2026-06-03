@@ -67,6 +67,50 @@ class ApplicationTest {
     }
 
     /**
+     * Verifica que registrar un usuario con documento único retorna mensaje de éxito.
+     */
+    @Test
+    @DisplayName("Crear usuario con documento único retorna éxito")
+    void testCrearUsuarioDocumentoUnico() {
+        Contratista nuevo = new Contratista(TipoPersona.NATURAL, TipoDocumento.CC,
+                "9999999999", "Ana Gómez", "ana@mail.com",
+                "clave", "300000000", "Calle 1", "Bogotá", false, "Derecho");
+        String resultado = usuarioServicio.crearUsuario(nuevo);
+        assertEquals("Usuario registrado exitosamente.", resultado);
+    }
+
+    /**
+     * Verifica que registrar un usuario con documento duplicado es rechazado.
+     */
+    @Test
+    @DisplayName("Crear usuario con documento duplicado es rechazado")
+    void testCrearUsuarioDocumentoDuplicado() {
+        Contratista duplicado = new Contratista(TipoPersona.NATURAL, TipoDocumento.CC,
+                "1234567890", "Otro Nombre", "otro@mail.com",
+                "clave", "300000000", "Calle 1", "Bogotá", false, "Sistemas");
+        String resultado = usuarioServicio.crearUsuario(duplicado);
+        assertTrue(resultado.contains("Ya existe"));
+    }
+
+    /**
+     * Verifica que existeDocumento retorna true para un documento registrado.
+     */
+    @Test
+    @DisplayName("existeDocumento retorna true para documento registrado")
+    void testExisteDocumentoRegistrado() {
+        assertTrue(usuarioServicio.existeDocumento("1234567890"));
+    }
+
+    /**
+     * Verifica que existeDocumento retorna false para un documento no registrado.
+     */
+    @Test
+    @DisplayName("existeDocumento retorna false para documento no registrado")
+    void testExisteDocumentoNoRegistrado() {
+        assertFalse(usuarioServicio.existeDocumento("0000000000"));
+    }
+
+    /**
      * Verifica que buscar un documento inexistente retorna null.
      */
     @Test
@@ -259,6 +303,48 @@ class ApplicationTest {
         String resultado = contratoServicio.crearContratoValidado(c);
         assertTrue(resultado.contains("no es válido"));
         assertNull(contratoServicio.consultarContrato("C006"));
+    }
+
+    /**
+     * Verifica que existeIdContrato retorna true para un ID ya registrado.
+     */
+    @Test
+    @DisplayName("existeIdContrato retorna true para ID registrado")
+    void testExisteIdContratoRegistrado() {
+        ContratoObrasPublicas c = new ContratoObrasPublicas(
+                LocalDate.now(), "C-DUP", "Obra test", 10_000_000,
+                2, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "Calle 1", 50.0);
+        contratoServicio.crearContrato(c);
+        assertTrue(contratoServicio.existeIdContrato("C-DUP"));
+    }
+
+    /**
+     * Verifica que existeIdContrato retorna false para un ID no registrado.
+     */
+    @Test
+    @DisplayName("existeIdContrato retorna false para ID no registrado")
+    void testExisteIdContratoNoRegistrado() {
+        assertFalse(contratoServicio.existeIdContrato("NO-EXISTE"));
+    }
+
+    /**
+     * Verifica que crear dos contratos con el mismo ID rechaza el segundo.
+     */
+    @Test
+    @DisplayName("Crear contrato con ID duplicado es rechazado")
+    void testCrearContratoIdDuplicado() {
+        ContratoObrasPublicas c1 = new ContratoObrasPublicas(
+                LocalDate.now(), "C-REP", "Obra 1", 10_000_000,
+                2, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "Calle 1", 50.0);
+        ContratoObrasPublicas c2 = new ContratoObrasPublicas(
+                LocalDate.now(), "C-REP", "Obra 2", 20_000_000,
+                3, EstadoContrato.PUBLICADO, TipoContrato.OBRA_PUBLICA,
+                contratista, contratante, "Calle 2", 80.0);
+        contratoServicio.crearContrato(c1);
+        String resultado = contratoServicio.crearContratoValidado(c2);
+        assertTrue(resultado.contains("Ya existe"));
     }
 
     /**

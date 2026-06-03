@@ -45,7 +45,7 @@ public class UsuarioControlador {
      * @param nivelEntidad   Nivel de la entidad.
      * @param codigoEntidad  Código único de entidad.
      */
-    public void crearContratante(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
+    public String crearContratante(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
                                   String numeroDocumento, String nombre, String correo,
                                   String contrasena, String telefono, String direccion,
                                   String ciudad, String sector, NivelEntidad nivelEntidad,
@@ -53,7 +53,7 @@ public class UsuarioControlador {
         Contratante contratante = new Contratante(tipoPersona, tipoDocumento, numeroDocumento,
                 nombre, correo, contrasena, telefono, direccion, ciudad,
                 sector, nivelEntidad, codigoEntidad);
-        usuarioServicio.crearUsuario(contratante);
+        return usuarioServicio.crearUsuario(contratante);
     }
 
     /**
@@ -71,14 +71,14 @@ public class UsuarioControlador {
      * @param esEntidadPublica Si es entidad pública.
      * @param areaDesempeno   Función principal del área de desempeño.
      */
-    public void crearContratista(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
+    public String crearContratista(TipoPersona tipoPersona, TipoDocumento tipoDocumento,
                                   String numeroDocumento, String nombre, String correo,
                                   String contrasena, String telefono, String direccion,
                                   String ciudad, boolean esEntidadPublica, String areaDesempeno) {
         Contratista contratista = new Contratista(tipoPersona, tipoDocumento, numeroDocumento,
                 nombre, correo, contrasena, telefono, direccion, ciudad,
                 esEntidadPublica, areaDesempeno);
-        usuarioServicio.crearUsuario(contratista);
+        return usuarioServicio.crearUsuario(contratista);
     }
 
     /**
@@ -116,6 +116,16 @@ public class UsuarioControlador {
      */
     public String eliminarUsuario(String numeroDocumento) {
         return usuarioServicio.eliminarUsuario(numeroDocumento);
+    }
+
+    /**
+     * Verifica si ya existe un usuario con el número de documento dado.
+     *
+     * @param numeroDocumento Número de documento a verificar.
+     * @return {@code true} si ya existe, {@code false} si no.
+     */
+    public boolean existeDocumento(String numeroDocumento) {
+        return usuarioServicio.existeDocumento(numeroDocumento);
     }
 
     /**

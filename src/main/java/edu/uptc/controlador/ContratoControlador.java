@@ -157,6 +157,16 @@ public class ContratoControlador {
     }
 
     /**
+     * Verifica si ya existe un contrato con el ID dado.
+     *
+     * @param id ID a verificar.
+     * @return {@code true} si ya existe, {@code false} si no.
+     */
+    public boolean existeIdContrato(String id) {
+        return contratoServicio.existeIdContrato(id);
+    }
+
+    /**
      * Retorna el servicio de contratos.
      *
      * @return Instancia de {@link ContratoServicio}.
